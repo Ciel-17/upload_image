@@ -1,6 +1,9 @@
 # client
+ 
+Vite + vue3 实现上传图片页面，
 
-Vite + vue3
+1.上传功能：并发请求控制，显示请求进度,请求失败最大重试次数
+2.瀑布流：瀑布流布局
 
 ## Recommended IDE Setup
 
@@ -21,4 +24,7 @@ pnpm install
 ```sh
 pnpm run dev
 ```
+上传界面展示：
 ![alt text](image.png)
+已上传图片瀑布流展示：
+![alt text](image-1.png)

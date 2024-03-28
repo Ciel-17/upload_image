@@ -8,17 +8,20 @@ const allImages = ref([]);
 const requestScheduler = new RequestScheduler(3);
 
 const onUploadImage = (images) => {
+  // 获取上一次上传的最后一个索引
   const lastIndex = allImages.value.length;
   images.forEach(async (file, index) => {
+    // 前端静态页面的展示
     allImages.value.push({
       progress: 0,
       filename: file.name,
       thumb: window.URL.createObjectURL(file),
     });
 
-    // 上传接口
+    // 上传请求
     requestScheduler.addRequest(async () => {
       const res = await uploadImage(file, (progressEvent) => {
+        // 获取图片上传进度
         let progress = Math.floor(progressEvent.progress * 100);
         allImages.value[lastIndex + index].progress = progress;
       });

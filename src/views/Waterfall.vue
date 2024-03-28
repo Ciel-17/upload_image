@@ -2,15 +2,19 @@
 import { onMounted, ref } from "vue";
 import { getImgs } from "@/request";
 
+// 瀑布流容器
 const cardList = ref([]);
 const pagination = {
   page: 1,
   size: 20,
 };
+// 瀑布流为四列，记录每一列的高度，初始值：[0, 0, 0, 0]
 const columnHeights = Array.from({ length: 4 }, () => 0);
+// 每一列宽度
 const WIDTH = 400;
 const allImgs = ref([]);
 
+// 获取高度最小的一列，以便后续插入图片
 const getMinCol = () => {
   const minHeight = Math.min(...columnHeights);
   const index = columnHeights.findIndex((v) => v === minHeight);
@@ -19,12 +23,15 @@ const getMinCol = () => {
     height: minHeight,
   };
 };
-
+// 表示是否请求结束
 let isEnd = false;
+// 加载图片方法
 const loadImgs = async () => {
   const res = await getImgs(pagination);
   // console.log(res);
+  // 包含图片路径的列表 link[]
   const links = res.data;
+  // 请求到的链接数量小于请求数量，则请求结束
   if (links.length < pagination.size) {
     isEnd = true;
   }
@@ -33,7 +40,7 @@ const loadImgs = async () => {
     image.src = link;
     image.className = "img";
     image.onload = () => {
-      // 最下值高度
+      // 最小高度
       const minCol = getMinCol();
       // console.log(minCol.index * WIDTH, minCol.height);
       // 创建DOM
@@ -54,6 +61,7 @@ const loadImgs = async () => {
   });
 };
 
+// 获取元素到页面顶部的距离
 const getOffsetTop = (el) => {
   let offsetTop = 0;
   while (el) {
@@ -62,7 +70,7 @@ const getOffsetTop = (el) => {
   }
   return offsetTop;
 };
-
+// 是否处于加载中,如果是,则不进行请求的发送
 let isLoading = false;
 const onScroll = async () => {
   // scrollTop 滚动距离，clientHeight 屏幕高度
@@ -71,6 +79,7 @@ const onScroll = async () => {
   // console.log(lastEl.offsetTop, 1);
   // console.log(getOffsetTop(lastEl), 2);
   if (!isLoading) {
+    // 如果滚动距离加到屏幕高度大于最后一个元素的高度的一半，并且没有请求结束
     if (
       scrollTop + clientHeight >
         lastEl.offsetHeight / 2 + getOffsetTop(lastEl) &&
@@ -86,6 +95,7 @@ const onScroll = async () => {
 };
 
 onMounted(() => {
+  // 监听滚动事件
   window.addEventListener("scroll", onScroll);
   loadImgs();
 });
